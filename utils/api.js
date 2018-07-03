@@ -1,43 +1,91 @@
 import { AsyncStorage } from 'react-native'
-import { formatCalendarResults, CALENDAR_STORAGE_KEY } from './_calendar'
 
-export function fetchCalendarResults () {
-  return AsyncStorage.getItem(CALENDAR_STORAGE_KEY)
-    .then(formatCalendarResults)
-}
+let data = {
+    Dog: {
+      title: 'Dog',
+      cards: [
+        {
+          question: "Do dogs like flowers?",
+          answer: 'correct'
+        },
+        {
+          question: 'Do dogs smoke?',
+          answer: 'incorrect'
+        }
+      ]
+    },
+    Cat: {
+      title: 'Cat',
+      cards: [
+        {
+          question: 'Does your cat hate you?',
+          answer: 'incorrect'
+        },
+        {
+          question: 'Do cats fight for fun?',
+          answer: 'incorrect'
+        }
+      ]
+    },
+    Bird: {
+      title: 'Bird',
+      cards: [
+        {
+          question: 'Do parrots understand what they speak?',
+          answer: 'correct'
+        },
+        {
+          question: 'Do birds love banana?',
+          answer: 'incorrect'
+        },
+      ]
+    }
+  }
 
-export function submitEntry ({ entry, key }) {
-  return AsyncStorage.mergeItem(CALENDAR_STORAGE_KEY, JSON.stringify({
-    [key]: entry
-  }))
-}
 
-export function removeEntry (key) {
-  return AsyncStorage.getItem(CALENDAR_STORAGE_KEY)
-    .then((results) => {
-      const data = JSON.parse(results)
-      data[key] = undefined
-      delete data[key]
-      AsyncStorage.setItem(CALENDAR_STORAGE_KEY, JSON.stringify(data))
+const STORAGE_KEY = "minhmeo";
+
+export function fetchDecks() {
+    return AsyncStorage.getItem(STORAGE_KEY).then(decks => {
+      if (decks === null) {
+            AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(data))
+            return data
+        } else {
+            return JSON.parse(decks)
+        }
     })
 }
 
-export function getDecks() {
-    return AsyncStorage.getAllKeys().then(formatDeckList)
+export function fetchDeck(title) {
+    return fetchDecks().then(decks => {
+        let mappedDecks = Object.keys(decks).map((key) => (decks[key]))
+        return mappedDecks.find(deck => deck.title ===  title)
+    }) 
 }
 
-export function getDeck(id) {
-    return AsyncStorage.getItems(id).then(formatDeck)
+export function saveNewDeck(title) {
+    const deck = {
+        [title]: {
+            title: title,
+            cards: []
+        }
+    }
+    return AsyncStorage.mergeItem(STORAGE_KEY, JSON.stringify(deck))
 }
 
-export function saveDeckTitle(title) {
-    return AsyncStorage.mergeItem(title, JSON.stringify({
-        [card]: card
-      }))    
+export function saveNewCard(card, title) {
+    return AsyncStorage.getItem(STORAGE_KEY, (error, decks) => {
+        let parsedDecks = JSON.parse(decks);
+        const deck = parsedDecks[title]
+        const updatedCards = [
+            ...deck.cards,
+            card
+        ]
+        const updatedDeck = JSON.stringify({[title]: {title: title, cards: updatedCards}});
+        AsyncStorage.mergeItem(STORAGE_KEY, updatedDeck)
+    })
 }
 
-export function addCardToDeck(title, card) {
-    return AsyncStorage.setItem(title, JSON.stringify({
-        [card]: card
-      })) 
+export function initializeDecks() {
+    return data
 }
