@@ -1,4 +1,5 @@
 import { AsyncStorage } from 'react-native'
+import { Notifications, Permissions } from 'expo';
 
 let data = {
     Dog: {
@@ -44,6 +45,7 @@ let data = {
 
 
 const STORAGE_KEY = "minhmeo";
+const NOTIFI_KEY = "minh";
 
 export function fetchDecks() {
     return AsyncStorage.getItem(STORAGE_KEY).then(decks => {
@@ -58,7 +60,7 @@ export function fetchDecks() {
 
 export function fetchDeck(title) {
     return fetchDecks().then(decks => {
-        let mappedDecks = Object.keys(decks).map((key) => (decks[key]))
+        let mappedDecks = Object.STORAGE_KEYs(decks).map((STORAGE_KEY) => (decks[STORAGE_KEY]))
         return mappedDecks.find(deck => deck.title ===  title)
     }) 
 }
@@ -88,4 +90,53 @@ export function saveNewCard(card, title) {
 
 export function initializeDecks() {
     return data
+}
+
+export function setLocalNotification() {
+  AsyncStorage.getItem(NOTIFI_KEY).then(JSON.parse)
+    .then((data) => {
+      if (data === null) {
+        Permissions.askAsync(Permissions.NOTIFICATIONS)
+          .then(({ status }) => {
+            if (status === 'granted') {
+              Notifications.cancelNotificationsAsync()
+
+              let tomorrow = new Date()
+              tomorrow.setDate(tomorrow.getDate() + 1)
+              tomorrow.setHours(20)
+              tomorrow.setMinutes(0)
+
+              Notifications.scheduleNotificationAsync(
+                createNotification(),
+                {
+                  time: tomorrow,
+                  repeat: 'day',
+                }
+              )
+              AsyncStorage.setItem(NOTIFI_KEY, JSON.stringify(true))
+            }
+          })
+      }
+    })
+}
+
+function createNotification() {
+  return {
+    title: 'Hey there',
+    body: "Let's do some QUIZ!",
+    ios: {
+      sound: true,
+    },
+    android: {
+      sound: true,
+      priority: 'high',
+      sticky: false,
+      vibrate: true,
+    }
+  }
+}
+
+export function clearLocalNotification() {
+  return AsyncStorage.removeItem(NOTIFICATION_KEY)
+    .then(Notifications.cancelAllScheduledNotificationsAsync)
 }

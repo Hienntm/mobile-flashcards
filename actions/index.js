@@ -28,14 +28,6 @@ export function addCard ({card, title}) {
   }
 }
 
-export function submitAnswer ({card, title}) {
-  return {
-    type: SUBMIT_ANSWER,
-    card,
-    title
-  }
-}
-
 export function resetDecks ({decks}) {
   return {
     type: RESET_DECKS,

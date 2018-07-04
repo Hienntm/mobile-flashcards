@@ -1,9 +1,8 @@
 import React, { Component } from 'react'
 import { Text, View, StyleSheet, TouchableOpacity } from 'react-native'
-import FlipCard from 'react-native-flip-card'
 import { connect } from 'react-redux'
-import { submitAnswer, reset } from '../actions'
-import { white, blue } from '../utils/colors'
+import { white, blue, pink } from '../utils/colors'
+import { clearLocalNotification, setLocalNotification} from '../utils/api'
 
 class Quiz extends Component {
     static navigationOptions = { title: 'Quiz' }
@@ -12,13 +11,20 @@ class Quiz extends Component {
         cardIndex: 0,
         rightAnswer: 0,
         result: 0,
-        showResult: false
+        showResult: false,
+        showQuestion: true,
+        showAnswer: false
     }
 
     chooseOption = (card, answer) => {
         const { decks, title } = this.props
         let { result, rightAnswer } = this.state
         const numOfcards = decks[title].cards.length
+
+        if (card.answer == answer) {
+            rightAnswer = rightAnswer + 1
+            this.setState({rightAnswer})
+        }
 
         if (numOfcards === (this.state.cardIndex + 1) ) {
             //show result
@@ -27,6 +33,7 @@ class Quiz extends Component {
                 showResult: true,
                 result,
             })
+            clearLocalNotification().then(setLocalNotification)
         }else {
             let currentIndex = this.state.cardIndex
             console.log(currentIndex)
@@ -35,11 +42,6 @@ class Quiz extends Component {
             this.setState({
                 cardIndex: currentIndex
             })
-
-            if (card.answer == answer) {
-                rightAnswer = rightAnswer + 1
-                this.setState({rightAnswer})
-            }
         }
     }
 
@@ -48,10 +50,39 @@ class Quiz extends Component {
         dispatchReset(title)
     }
 
+    showAnswer = () => {
+        this.setState({
+            showAnswer: true,
+            showQuestion: false
+        })
+    }
+
+    showQuestion = () => {
+        this.setState({
+            showAnswer: false,
+            showQuestion: true
+        })
+    }
+
+    restartQuiz = () => {
+        this.setState({
+            cardIndex: 0,
+            rightAnswer: 0,
+            result: 0,
+            showResult: false,
+            showQuestion: true,
+            showAnswer: false
+        })        
+    }
+    
+    goBackToDeck = () => {
+        this.props.navigation.goBack()
+    }
+
     render() {
         const { decks } = this.props
         const { title } = this.props.navigation.state.params
-        const { showResult, result, cardIndex } = this.state
+        const { showResult, result, cardIndex, showQuestion, showAnswer } = this.state
         const deck = decks[title]
         const card = deck.cards[cardIndex]
         const numOfcards = decks[title].cards.length
@@ -61,26 +92,40 @@ class Quiz extends Component {
                 {   showResult && 
                     <View>
                         <Text style={{marginTop:50, marginBottom:30, fontSize: 22}}>You got {result} %</Text>
+                        <TouchableOpacity style={styles.btn} onPress={()=>this.restartQuiz()}>
+                            <Text style={{color:white}}>Restart Quiz</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.btn} onPress={()=>this.goBackToDeck()}>
+                            <Text style={{color:white}}>Back to Deck</Text>
+                        </TouchableOpacity>
                     </View>
                 }
                 {   !showResult && card && 
-                    <FlipCard style={styles.flipCard}>
-                        <View>
+                    <View>
+                        { showQuestion &&
+                        <View style={{alignItems:'center'}}>
                             <Text style={{marginTop:30}}>{cardIndex+1}/{numOfcards}</Text>
                             <Text style={{marginTop:50, marginBottom:30, fontSize: 22}}>{card.question}</Text>
-                            <TouchableOpacity style={styles.answerBtn} onPress={()=>this.chooseOption(card, 'correct')}>
+                            <TouchableOpacity style={styles.btn} onPress={()=>this.chooseOption(card, 'correct')}>
                                 <Text style={{color:white}}>Correct</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity style={styles.answerBtn} onPress={()=>this.chooseOption(card, 'incorrect')}>
+                            <TouchableOpacity style={styles.btn} onPress={()=>this.chooseOption(card, 'incorrect')}>
                                 <Text style={{color:white}}>Incorrect</Text>
                             </TouchableOpacity>
-                            <Text style={{marginTop:30}}>Touch to see Answer</Text>
+                            <TouchableOpacity style={styles.flipBtn} onPress={this.showAnswer}>
+                                <Text style={{color:white}}>Show Answer</Text>
+                            </TouchableOpacity>
                         </View>
+                        }
+                        { showAnswer &&
                         <View>
                             <Text style={{marginTop:50, marginBottom:30, fontSize: 22}}>{card.answer}</Text>
-                            <Text>Touch to see Question</Text>
+                            <TouchableOpacity style={styles.flipBtn} onPress={this.showQuestion}>
+                                <Text style={{color:white}}>Show Question</Text>
+                            </TouchableOpacity>
                         </View>
-                    </FlipCard>
+                        }
+                    </View>
                 }
 
             </View>
@@ -97,13 +142,22 @@ const styles = StyleSheet.create({
       borderWidth: 0,
       flex: 1,
     },
-    answerBtn: {
+    btn: {
         width: 120,
         backgroundColor: blue, 
         borderRadius: 5,
         alignItems: 'center', 
         padding: 10,
         margin: 5
+    },
+    flipBtn: {
+        width: 120,
+        backgroundColor: pink, 
+        borderRadius: 5,
+        alignItems: 'center', 
+        padding: 10,
+        margin: 5,
+        marginTop: 20
     }
 })
 
@@ -116,15 +170,5 @@ const mapStateToProps = (state, {navigation}) => {
     }
 }
 
-const mapDispatchToProps = dispatch => {
-    return {
-        dispatchSubmitAnswer : (title, card) => {
-            dispatch(submitAnswer({title, card, answer}))
-        },
-        reset: (title) => {
-            dispatch(reset({title}))
-        }
-    }
-}
 
-export default connect(mapStateToProps, mapDispatchToProps)(Quiz)
+export default connect(mapStateToProps)(Quiz)

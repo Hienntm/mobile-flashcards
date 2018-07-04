@@ -4,14 +4,14 @@ import { createStore } from 'redux'
 import { Provider } from 'react-redux'
 import reducer from './reducers'
 import { createBottomTabNavigator, createStackNavigator } from 'react-navigation'
-import { purple, white, pink, blue } from './utils/colors'
-import { FontAwesome, Ionicons } from '@expo/vector-icons'
-import { Constants } from 'expo'
+import { purple, white, pink } from './utils/colors'
+import { FontAwesome } from '@expo/vector-icons'
 import Decks from './components/Decks'
 import AddDeck from './components/AddDeck'
 import AddCard from './components/AddCard'
 import Quiz from './components/Quiz'
 import DeckDetail from './components/DeckDetail'
+import {setLocalNotification} from './utils/api';
 
 const Tabs = createBottomTabNavigator({
   Decks: {
@@ -84,6 +84,9 @@ const Stack = createStackNavigator({
 const store = createStore(reducer)
 
 export default class App extends React.Component {
+  componentDidMount() {
+    setLocalNotification()
+  }
   render() {
     return (
       <Provider store={store}>

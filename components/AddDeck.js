@@ -1,12 +1,9 @@
 import React, { Component } from 'react'
 import { View, TouchableOpacity, Text, TextInput, StyleSheet, Platform } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
 import { saveNewDeck } from '../utils/api'
 import { connect } from 'react-redux'
 import { addDeck } from '../actions'
-import { purple, white, blue } from '../utils/colors'
-import { NavigationActions } from 'react-navigation'
-import FontAwesome from '@expo/vector-icons/FontAwesome'
+import { white, blue } from '../utils/colors'
 
 class AddDeck extends Component {
   state = {
