@@ -45,7 +45,7 @@ let data = {
 
 
 const STORAGE_KEY = "minhmeo";
-const NOTIFI_KEY = "minh";
+const NOTIFICATION_KEY = "minh";
 
 export function fetchDecks() {
     return AsyncStorage.getItem(STORAGE_KEY).then(decks => {
@@ -93,7 +93,7 @@ export function initializeDecks() {
 }
 
 export function setLocalNotification() {
-  AsyncStorage.getItem(NOTIFI_KEY).then(JSON.parse)
+  AsyncStorage.getItem(NOTIFICATION_KEY).then(JSON.parse)
     .then((data) => {
       if (data === null) {
         Permissions.askAsync(Permissions.NOTIFICATIONS)
@@ -113,7 +113,7 @@ export function setLocalNotification() {
                   repeat: 'day',
                 }
               )
-              AsyncStorage.setItem(NOTIFI_KEY, JSON.stringify(true))
+              AsyncStorage.setItem(NOTIFICATION_KEY, JSON.stringify(true))
             }
           })
       }
