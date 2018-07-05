@@ -18,7 +18,7 @@ class Quiz extends Component {
 
     chooseOption = (card, answer) => {
         const { decks, title } = this.props
-        let { result, rightAnswer } = this.state
+        let { result, rightAnswer, cardIndex } = this.state
         const numOfcards = decks[title].cards.length
 
         if (card.answer == answer) {
@@ -35,17 +35,9 @@ class Quiz extends Component {
             })
             clearLocalNotification().then(setLocalNotification)
         }else {
-            let currentIndex = this.state.cardIndex
-            currentIndex = currentIndex + 1
-            this.setState({
-                cardIndex: currentIndex
-            })
+            cardIndex = cardIndex + 1
+            this.setState({cardIndex})
         }
-    }
-
-    reset = () => {
-        const { dispatchReset, title } = this.props
-        dispatchReset(title)
     }
 
     showAnswer = () => {
