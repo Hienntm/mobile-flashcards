@@ -6,7 +6,6 @@ function decks(state = {}, action) {
     case ADD_DECK:
       return (() => {
         const { title } = action.deck
-        console.log(action)
         return {
           ...state,
           [title]: {

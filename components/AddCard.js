@@ -38,11 +38,11 @@ class AddCard extends Component {
         const { question, answer } = this.state
         return (
             <View style={styles.container}>
-                <TextInput style={{fontSize:22, marginBottom:30}}
+                <TextInput style={styles.textInput}
                     placeholder="question?"
                     onChangeText={this.updateQuestion} value={question}
                 />
-                <TextInput style={{fontSize:22, marginBottom:30}}
+                <TextInput style={styles.textInput}
                     placeholder="correct or incorrect only"
                     onChangeText={this.updateAnswer} value={answer}
                 />
@@ -64,6 +64,14 @@ const styles = StyleSheet.create({
         padding: 25,
         alignItems: 'center',
     },
+    textInput: {
+      width: 300,
+      margin: 20,
+      height: 50,
+      borderWidth: 2,
+      paddingLeft: 10,
+      borderRadius:5
+    }, 
     btn: {
         width: 120,
         backgroundColor: blue, 

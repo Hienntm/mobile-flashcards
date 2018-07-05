@@ -41,7 +41,6 @@ class Decks extends Component {
     }
 
     const { decks } = this.props
-    console.log(decks)
     return (
       <View style={styles.container}>
         <TouchableOpacity style={styles.resetBtn} onPress={() => this.clickResetDecks()}><Text style={{color:white, fontSize: 22}}>RESET</Text></TouchableOpacity>

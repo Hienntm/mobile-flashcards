@@ -33,12 +33,10 @@ class Quiz extends Component {
                 showResult: true,
                 result,
             })
-            clearLocalNotification().then(setLocalNotification)
+            clearLocalNotification().then(setLocalNotification())
         }else {
             let currentIndex = this.state.cardIndex
-            console.log(currentIndex)
             currentIndex = currentIndex + 1
-            console.log(currentIndex)
             this.setState({
                 cardIndex: currentIndex
             })
