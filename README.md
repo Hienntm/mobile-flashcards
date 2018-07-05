@@ -25,4 +25,4 @@ yarn start --reset-cache
 
 ### Testing 
 
-This app is tested on iPhon6 iOS 11.4
+This app is tested on iPhone6 iOS 11.4
